@@ -4,34 +4,34 @@
 
 # The Surprising Power of Simple Algorithms and Big Data
 
-Have you ever been amazed at how your phone recognizes your face, how streaming services seem to know exactly what you want to watch next, or how voice assistants understand your questions? It might seem like there's some deep, complex magic happening inside these technologies. But here's the surprising part: **it's pretty amazing how large amounts of data, and a relatively simple mechanic (backpropagation and gradient descent), can produce mind-blowing results**.
+Have you ever been amazed at how your smartphone recognizes your face, how streaming services predict what you'll enjoy watching next, or how voice assistants understand your questions? It might seem like there's some complex magic happening behind the scenes. But here's the surprising part: **it's pretty amazing how large amounts of data, and a relatively simple mechanic (backpropagation and gradient descent), can produce mind-blowing results**.
 
 ## The Simple Idea Behind Complex Tasks
 
-At the heart of many advanced technologies are simple algorithms working with lots of data. Think of it like teaching a child. The more examples and experiences you provide, the better they learn. Similarly, machine learning models improve as they process more data.
+At the core of many advanced technologies are simple algorithms working with lots of data. It's like teaching someone to play a song on the piano. The more they practice (data), and the more they adjust based on feedback (simple learning rules), the better they get.
 
-### Big Data: The More, the Merrier
+### Big Data: The Fuel for Learning
 
 Data is like the raw material for machine learning.
 
 - **Learning from Examples**: The more data you feed into a model, the better it can learn patterns and make accurate predictions.
-- **Capturing Nuances**: Large datasets help models understand subtle differences and variations that small datasets might miss.
+- **Capturing Nuances**: Large datasets help models understand subtle differences that small datasets might miss.
 
-Imagine trying to learn to recognize different breeds of dogs. If you've only seen a few pictures, you might get confused. But if you've seen thousands of images, you'll start to notice the unique features of each breed.
+Imagine trying to recognize different dog breeds. If you've only seen a few pictures, you might confuse a Labrador with a Golden Retriever. But if you've seen thousands of images, you'll start to notice the unique features of each breed.
 
 ### Backpropagation and Gradient Descent: The Learning Process
 
-These might sound like complex terms, but they're simpler than you think.
+These might sound technical, but they're simpler than you think.
 
 #### Backpropagation: Learning from Mistakes
 
 Backpropagation is how a model learns from errors.
 
-- **Making a Guess**: The model makes a prediction based on the current data.
+- **Making a Guess**: The model makes a prediction based on current data.
 - **Checking Accuracy**: It compares its prediction to the actual result to see how far off it was.
 - **Adjusting**: It then goes back and tweaks its internal settings to improve next time.
 
-It's like practicing basketball shots. After each shot, you see if you made it or missed. If you missed, you adjust your next shot based on where the last one went.
+It's like practicing basketball shots. After each shot, you see if you made it or missed. If you missed, you adjust your technique for the next shot.
 
 #### Gradient Descent: Finding the Best Path
 
@@ -40,11 +40,11 @@ Gradient descent helps the model figure out the best way to adjust its settings 
 - **Calculating Direction**: It figures out which way to change the settings to improve accuracy.
 - **Taking Steps**: It makes small adjustments in that direction.
 
-Think of it as climbing down a hill in the fog. You can't see the bottom, but you can feel which way the ground slopes down, so you take small steps downward, gradually reaching the lowest point.
+Think of it as walking downhill to reach the lowest point in a valley. Even if it's foggy and you can't see far, you can feel the slope under your feet and keep moving downward.
 
 ## The Code: Seeing It in Action
 
-To make this concept more concrete, let's look at a simple Python script that demonstrates how large amounts of data and simple algorithms can achieve impressive results.
+To make this concept more concrete, let's look at a simple Python script that demonstrates how large amounts of data and simple algorithms can achieve impressive results. We'll use **PyTorch Lightning**, a user-friendly library that simplifies the training process.
 
 ### What We'll Do
 
@@ -65,50 +65,102 @@ Here's the code:
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-import tensorflow as tf
+
+import torch
+from torch.utils.data import DataLoader, TensorDataset
+import pytorch_lightning as pl
+from torch import nn
 
 def generate_data(num_samples):
+    """
+    Generate synthetic 2D data points and label them based on whether
+    they are inside a circle centered at (0, 0) with radius 0.5.
+    """
     X = np.random.uniform(-1, 1, (num_samples, 2))
-    Y = np.zeros((num_samples, 1))
+    Y = np.zeros((num_samples, 1), dtype=np.float32)
+
     for i in range(num_samples):
         x, y = X[i]
         if x**2 + y**2 <= 0.5**2:
-            Y[i] = 1  # Inside the circle
-    return X, Y
+            Y[i] = 1.0  # Inside the circle
+        else:
+            Y[i] = 0.0  # Outside the circle
+    return X.astype(np.float32), Y
 
-def build_model():
-    model = tf.keras.Sequential([
-        tf.keras.layers.Dense(8, activation='relu', input_shape=(2,)),
-        tf.keras.layers.Dense(1, activation='sigmoid')
-    ])
-    return model
+class CircleClassifier(pl.LightningModule):
+    def __init__(self):
+        super().__init__()
+        self.model = nn.Sequential(
+            nn.Linear(2, 8),
+            nn.ReLU(),
+            nn.Linear(8, 1),
+            nn.Sigmoid()
+        )
+        self.loss_fn = nn.BCELoss()
+    
+    def forward(self, x):
+        return self.model(x).squeeze()
+    
+    def training_step(self, batch, batch_idx):
+        x, y = batch
+        preds = self(x)
+        loss = self.loss_fn(preds, y.squeeze())
+        self.log('train_loss', loss)
+        return loss
+    
+    def validation_step(self, batch, batch_idx):
+        x, y = batch
+        preds = self(x)
+        loss = self.loss_fn(preds, y.squeeze())
+        acc = ((preds > 0.5) == y.squeeze()).float().mean()
+        self.log('val_loss', loss)
+        self.log('val_acc', acc, prog_bar=True)
+        return loss
+    
+    def configure_optimizers(self):
+        optimizer = torch.optim.SGD(self.parameters(), lr=0.1)
+        return optimizer
 
 def main():
-    # Generate Data
+    # Step 1: Generate Data
     num_samples = 5000
     X, Y = generate_data(num_samples)
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
+    X_train, X_test, Y_train, Y_test = train_test_split(
+        X, Y, test_size=0.2, random_state=42
+    )
 
-    # Build Model
-    model = build_model()
+    # Create DataLoaders
+    train_dataset = TensorDataset(torch.from_numpy(X_train), torch.from_numpy(Y_train))
+    test_dataset = TensorDataset(torch.from_numpy(X_test), torch.from_numpy(Y_test))
 
-    # Compile Model
-    model.compile(optimizer='sgd', loss='binary_crossentropy', metrics=['accuracy'])
+    train_loader = DataLoader(train_dataset, batch_size=32)
+    val_loader = DataLoader(test_dataset, batch_size=32)
 
-    # Train Model
-    model.fit(X_train, Y_train, epochs=50, batch_size=32, validation_data=(X_test, Y_test))
+    # Step 2: Initialize Model
+    model = CircleClassifier()
 
-    # Evaluate Model
-    loss, accuracy = model.evaluate(X_test, Y_test)
-    print(f'Test Accuracy: {accuracy * 100:.2f}%')
+    # Step 3: Train the Model
+    trainer = pl.Trainer(max_epochs=50)
+    trainer.fit(model, train_loader, val_loader)
 
-    # Visualize Decision Boundary
+    # Step 4: Evaluate the Model
+    trainer.validate(model, val_loader)
+
+    # Step 5: Visualize the Decision Boundary
     xx, yy = np.mgrid[-1:1:0.01, -1:1:0.01]
     grid = np.c_[xx.ravel(), yy.ravel()]
-    probs = model.predict(grid).reshape(xx.shape)
+    grid_tensor = torch.from_numpy(grid.astype(np.float32))
+    with torch.no_grad():
+        probs = model(grid_tensor).reshape(xx.shape)
+    probs = probs.numpy()
 
-    plt.contourf(xx, yy, probs, levels=[0, 0.5, 1], cmap="RdBu", alpha=0.6)
-    plt.scatter(X_train[:, 0], X_train[:, 1], c=Y_train[:, 0], cmap="RdBu", edgecolors='k')
+    plt.figure(figsize=(8, 6))
+    contour = plt.contourf(xx, yy, probs, levels=[0, 0.5, 1], cmap="RdBu", alpha=0.6)
+    plt.colorbar(contour)
+    plt.scatter(X_train[:, 0], X_train[:, 1], c=Y_train[:, 0], cmap="RdBu", edgecolors='k', alpha=0.5)
+    plt.title('Decision Boundary and Training Data')
+    plt.xlabel('X1')
+    plt.ylabel('X2')
     plt.show()
 
 if __name__ == '__main__':
@@ -124,78 +176,143 @@ We create `num_samples` random points within the square from -1 to 1 on both axe
 ```python
 def generate_data(num_samples):
     X = np.random.uniform(-1, 1, (num_samples, 2))  # Random points
-    Y = np.zeros((num_samples, 1))  # Labels
+    Y = np.zeros((num_samples, 1), dtype=np.float32)  # Labels
     for i in range(num_samples):
         x, y = X[i]
         if x**2 + y**2 <= 0.5**2:
-            Y[i] = 1  # Inside the circle of radius 0.5
-    return X, Y
+            Y[i] = 1.0  # Inside the circle of radius 0.5
+    return X.astype(np.float32), Y
 ```
 
 - **Purpose**: We're simulating a simple classification problem where the model needs to learn to distinguish points inside a circle from those outside.
 - **Why It Matters**: This provides a visual and intuitive way to see how the model learns.
 
-#### Building the Model
+#### Building the Model with PyTorch Lightning
 
-We define a simple neural network.
+We define a simple neural network using PyTorch Lightning.
 
 ```python
-def build_model():
-    model = tf.keras.Sequential([
-        tf.keras.layers.Dense(8, activation='relu', input_shape=(2,)),  # Hidden layer
-        tf.keras.layers.Dense(1, activation='sigmoid')  # Output layer
-    ])
-    return model
+class CircleClassifier(pl.LightningModule):
+    def __init__(self):
+        super().__init__()
+        self.model = nn.Sequential(
+            nn.Linear(2, 8),   # Input layer to hidden layer
+            nn.ReLU(),         # Activation function
+            nn.Linear(8, 1),   # Hidden layer to output layer
+            nn.Sigmoid()       # Output activation to get probabilities
+        )
+        self.loss_fn = nn.BCELoss()  # Binary Cross Entropy Loss
+    
+    def forward(self, x):
+        return self.model(x).squeeze()
 ```
 
 - **Layers**:
   - **Input Layer**: Takes two inputs (x and y coordinates).
   - **Hidden Layer**: 8 neurons with ReLU activation function.
   - **Output Layer**: 1 neuron with sigmoid activation to output a probability between 0 and 1.
-- **Why Simple**: This network is straightforward, demonstrating that even basic models can learn complex patterns with enough data.
+- **Loss Function**: Binary Cross Entropy Loss measures the difference between predicted and actual labels.
+- **Why Simple**: This network is straightforward, showing that even basic models can learn complex patterns with enough data.
+
+#### Training and Validation Steps
+
+We define how the model should train and validate.
+
+```python
+def training_step(self, batch, batch_idx):
+    x, y = batch
+    preds = self(x)
+    loss = self.loss_fn(preds, y.squeeze())
+    self.log('train_loss', loss)
+    return loss
+
+def validation_step(self, batch, batch_idx):
+    x, y = batch
+    preds = self(x)
+    loss = self.loss_fn(preds, y.squeeze())
+    acc = ((preds > 0.5) == y.squeeze()).float().mean()
+    self.log('val_loss', loss)
+    self.log('val_acc', acc, prog_bar=True)
+    return loss
+```
+
+- **Training Step**:
+  - **Calculates Predictions**: Uses the model to predict outputs.
+  - **Computes Loss**: Measures how far off the predictions are.
+  - **Logs Loss**: Keeps track of the loss for monitoring.
+- **Validation Step**:
+  - **Same as Training Step**, but also calculates accuracy to see how well the model is performing.
+
+#### Optimizer Configuration
+
+We specify the optimizer for gradient descent.
+
+```python
+def configure_optimizers(self):
+    optimizer = torch.optim.SGD(self.parameters(), lr=0.1)
+    return optimizer
+```
+
+- **Optimizer**: Stochastic Gradient Descent (SGD) adjusts the model parameters to minimize the loss.
+- **Learning Rate**: Set to 0.1, which determines the size of each adjustment step.
 
 #### Training the Model
 
-We compile and train the model.
+We set up the training process.
 
 ```python
-model.compile(optimizer='sgd', loss='binary_crossentropy', metrics=['accuracy'])
+def main():
+    # Generate Data
+    num_samples = 5000
+    X, Y = generate_data(num_samples)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
 
-model.fit(X_train, Y_train, epochs=50, batch_size=32, validation_data=(X_test, Y_test))
+    # Create DataLoaders
+    train_dataset = TensorDataset(torch.from_numpy(X_train), torch.from_numpy(Y_train))
+    test_dataset = TensorDataset(torch.from_numpy(X_test), torch.from_numpy(Y_test))
+
+    train_loader = DataLoader(train_dataset, batch_size=32)
+    val_loader = DataLoader(test_dataset, batch_size=32)
+
+    # Initialize Model
+    model = CircleClassifier()
+
+    # Train the Model
+    trainer = pl.Trainer(max_epochs=50)
+    trainer.fit(model, train_loader, val_loader)
 ```
 
-- **Optimizer**: `'sgd'` stands for stochastic gradient descent, our simple mechanic for adjusting the model based on errors.
-- **Loss Function**: `'binary_crossentropy'` measures the difference between predicted and actual labels.
-- **Training Process**:
-  - The model predicts outputs for the inputs.
-  - It calculates the error using the loss function.
-  - Backpropagation adjusts the weights to minimize the error using gradient descent.
+- **DataLoaders**: Handle batching of data for training.
+- **Trainer**: Manages the training loop, applying backpropagation and gradient descent under the hood.
+- **Epochs**: The number of times the model will go through the entire training dataset.
 
 #### Evaluating and Visualizing
 
-We check how well the model performed and visualize the results.
+We check the model's performance and visualize the results.
 
 ```python
-loss, accuracy = model.evaluate(X_test, Y_test)
-print(f'Test Accuracy: {accuracy * 100:.2f}%')
+    # Evaluate the Model
+    trainer.validate(model, val_loader)
+
+    # Visualize Decision Boundary
+    xx, yy = np.mgrid[-1:1:0.01, -1:1:0.01]
+    grid = np.c_[xx.ravel(), yy.ravel()]
+    grid_tensor = torch.from_numpy(grid.astype(np.float32))
+    with torch.no_grad():
+        probs = model(grid_tensor).reshape(xx.shape)
+    probs = probs.numpy()
+
+    plt.figure(figsize=(8, 6))
+    contour = plt.contourf(xx, yy, probs, levels=[0, 0.5, 1], cmap="RdBu", alpha=0.6)
+    plt.colorbar(contour)
+    plt.scatter(X_train[:, 0], X_train[:, 1], c=Y_train[:, 0], cmap="RdBu", edgecolors='k', alpha=0.5)
+    plt.title('Decision Boundary and Training Data')
+    plt.xlabel('X1')
+    plt.ylabel('X2')
+    plt.show()
 ```
 
-- **Test Accuracy**: Shows how well the model can predict unseen data.
-
-For visualization:
-
-```python
-# Create a grid to plot decision boundary
-xx, yy = np.mgrid[-1:1:0.01, -1:1:0.01]
-grid = np.c_[xx.ravel(), yy.ravel()]
-probs = model.predict(grid).reshape(xx.shape)
-
-# Plot decision boundary and data points
-plt.contourf(xx, yy, probs, levels=[0, 0.5, 1], cmap="RdBu", alpha=0.6)
-plt.scatter(X_train[:, 0], X_train[:, 1], c=Y_train[:, 0], cmap="RdBu", edgecolors='k')
-plt.show()
-```
-
+- **Validation**: Checks model performance on unseen data.
 - **Decision Boundary**: Visualizes how the model separates the space into areas predicted as inside or outside the circle.
 - **Data Points**: Plots the training data to see how well the model's predictions align.
 
@@ -212,7 +329,7 @@ To run this code:
 1. **Install Dependencies**:
 
    ```bash
-   pip install numpy matplotlib scikit-learn tensorflow
+   pip install numpy matplotlib scikit-learn torch pytorch-lightning
    ```
 
 2. **Run the Script**:
@@ -224,7 +341,7 @@ To run this code:
 3. **Observe the Output**:
 
    - **Training Progress**: You'll see how the model improves over epochs.
-   - **Test Accuracy**: The final accuracy on the test set.
+   - **Validation Results**: The final accuracy on the test set.
    - **Visualization**: A plot showing the decision boundary and data points.
 
 ### Connecting Back to Our Main Point
@@ -237,5 +354,5 @@ This simple experiment shows how powerful combining large amounts of data with b
 
 ## Bringing It All Together
 
-It's pretty amazing, isn't it? By harnessing large amounts of data and using simple mechanics like backpropagation and gradient descent, we can create models that perform tasks we might have thought required much more complex solutions.
+It's pretty amazing when you think about it: by harnessing large amounts of data and using simple mechanics like backpropagation and gradient descent, we can create models that perform tasks we might have thought required much more complex solutions.
 
