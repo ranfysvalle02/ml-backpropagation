@@ -2,7 +2,7 @@
 
 ---
 
-# The Surprising Magic of Simple Algorithms and Big Data in Machine Learning
+# The Surprising Magic of Simple Algorithms and Big Data
 
 ---
 
