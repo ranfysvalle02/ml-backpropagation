@@ -2,7 +2,7 @@
 
 ---
 
-# The Surprising Power of Simple Algorithms and Big Data in Machine Learning
+# The Surprising Power of Simple Algorithms and Big Data
 
 Have you ever been amazed at how your phone recognizes your face, how streaming services seem to know exactly what you want to watch next, or how voice assistants understand your questions? It might seem like there's some deep, complex magic happening inside these technologies. But here's the surprising part: **it's pretty amazing how large amounts of data, and a relatively simple mechanic (backpropagation and gradient descent), can produce mind-blowing results**.
 
