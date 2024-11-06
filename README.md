@@ -330,6 +330,25 @@ We check the model's performance and visualize the results.
 - **Decision Boundary**: Visualizes how the model separates the space into areas predicted as inside or outside the circle.
 - **Data Points**: Plots the training data to see how well the model's predictions align.
 
+# Appendix
+
+## Understanding Differential Calculus
+
+Differential calculus, a subfield of calculus, focuses on describing change. It involves the concept of a derivative, which can be interpreted as the rate of change of a function at a point. In other words, it measures how a function changes as its input changes. This concept is fundamental to understanding how things change over time and is at the heart of many scientific and mathematical disciplines.
+
+## The Impact of Differential Calculus
+
+Differential calculus has had a profound impact on our understanding of the world and the development of modern technology. It is fundamental to physics, engineering, computer science, economics, statistics, and many other fields.
+
+In physics, for example, differential calculus is used to describe the motion of objects, the behavior of electric and magnetic fields, the propagation of light, and much more. It allows us to predict how physical systems will evolve over time based on their current state.
+
+## Newton, Einstein, and the Evolution of Physics
+
+Sir Isaac Newton, one of the inventors of calculus, used it to formulate his laws of motion and universal gravitation, laying the groundwork for classical physics. Newton's laws describe the motion of objects in our everyday world with great accuracy. His work was a monumental leap in human understanding, and Albert Einstein once said of Newton's contributions, "perhaps the greatest advance in thought that a single individual was ever privileged to make."
+
+However, at the turn of the 20th century, Albert Einstein showed that Newton's laws break down when dealing with very high speeds or very strong gravitational fields. Einstein's theory of relativity, which describes the behavior of objects at high speeds and the nature of gravity, required a more advanced form of calculus known as tensor calculus.
+
+
 ### FULL CODE
 
 ```python
