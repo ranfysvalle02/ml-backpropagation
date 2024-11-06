@@ -8,6 +8,10 @@
 
 Have you ever been amazed at how your smartphone recognizes your face, how streaming services predict what you'll enjoy watching next, or how voice assistants understand your questions? It might seem like there's some complex magic happening behind the scenes. But here's the surprising part: **it's pretty amazing how large amounts of data, and a relatively simple mechanic (backpropagation and gradient descent), can produce mind-blowing results**.
 
+Backpropagation uses the chain rule from differential calculus to compute the gradient (or derivative) of the loss function with respect to the weights in a neural network. This gradient is then used in the gradient descent algorithm to update the weights and minimize the loss function.
+
+Gradient descent is an optimization algorithm that uses the gradient (or derivative) of the loss function to decide in which direction to adjust the weights in order to minimize the loss. The gradient points in the direction of steepest ascent, so by moving in the opposite direction (i.e., the direction of steepest descent), the algorithm iteratively finds the minimum of the function.
+
 ## The Simple Idea Behind The Magic
 
 At the core of many advanced technologies are simple algorithms working with lots of data. It's like teaching someone to play a song on the piano. The more they practice (data), and the more they adjust based on feedback (simple learning rules), the better they get.
