@@ -1,5 +1,7 @@
 # ml-backpropagation
 
+![](https://editor.analyticsvidhya.com/uploads/18870backprop2.png)
+
 ---
 
 # The Surprising Power of Simple Algorithms and Big Data
