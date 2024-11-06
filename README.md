@@ -37,6 +37,8 @@ It's like practicing basketball shots. After each shot, you see if you made it o
 
 #### Gradient Descent: Finding the Best Path
 
+![](https://miro.medium.com/v2/resize:fit:766/1*f4RBGeeL7hVkWVJY3qBQ-g.png)
+
 Gradient descent helps the model figure out the best way to adjust its settings to reduce errors.
 
 - **Calculating Direction**: It figures out which way to change the settings to improve accuracy.
