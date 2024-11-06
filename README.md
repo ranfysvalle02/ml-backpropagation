@@ -37,7 +37,7 @@ It's like practicing basketball shots. After each shot, you see if you made it o
 
 #### Gradient Descent: Finding the Best Path
 
-![](https://miro.medium.com/v2/resize:fit:766/1*f4RBGeeL7hVkWVJY3qBQ-g.png)
+![](https://miro.medium.com/v2/resize:fit:1280/1*5GVn76wnuxMB9zziulnd8w.gif)
 
 Gradient descent helps the model figure out the best way to adjust its settings to reduce errors.
 
@@ -45,6 +45,10 @@ Gradient descent helps the model figure out the best way to adjust its settings 
 - **Taking Steps**: It makes small adjustments in that direction.
 
 Think of it as walking downhill to reach the lowest point in a valley. Even if it's foggy and you can't see far, you can feel the slope under your feet and keep moving downward.
+
+## The Gradient
+
+Gradient descent employs backpropagation to ascertain the direction of navigation. In particular, it utilizes the gradients computed via backpropagation. These gradients are instrumental in deciding the path to follow to locate the minimum point. Essentially, we are seeking the negative gradient. This is due to the fact that a negative gradient signifies a diminishing slope. A diminishing slope implies that moving downward will guide us to the minimum point. 
 
 ## The Code: Seeing It in Action
 
