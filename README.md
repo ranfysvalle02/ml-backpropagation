@@ -48,6 +48,8 @@ Think of it as walking downhill to reach the lowest point in a valley. Even if i
 
 ## The Gradient
 
+![](https://editor.analyticsvidhya.com/uploads/14647Slide6.PNG)
+
 Gradient descent employs backpropagation to ascertain the direction of navigation. In particular, it utilizes the gradients computed via backpropagation. These gradients are instrumental in deciding the path to follow to locate the minimum point. Essentially, we are seeking the negative gradient. This is due to the fact that a negative gradient signifies a diminishing slope. A diminishing slope implies that moving downward will guide us to the minimum point. 
 
 ## The Code: Seeing It in Action
