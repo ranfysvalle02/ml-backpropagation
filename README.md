@@ -326,12 +326,6 @@ We check the model's performance and visualize the results.
 - **Decision Boundary**: Visualizes how the model separates the space into areas predicted as inside or outside the circle.
 - **Data Points**: Plots the training data to see how well the model's predictions align.
 
-### What This Demonstrates
-
-- **Large Data Impact**: With 5,000 samples, the model has enough data to learn the circular boundary.
-- **Simple Mechanics at Work**: Using basic backpropagation and gradient descent, the model adjusts to minimize errors.
-- **Complex Patterns Learned**: Despite the simplicity, the model learns a non-linear boundary (the circle), which is a complex pattern.
-
 ### FULL CODE
 
 ```python
