@@ -330,6 +330,8 @@ We check the model's performance and visualize the results.
 - **Decision Boundary**: Visualizes how the model separates the space into areas predicted as inside or outside the circle.
 - **Data Points**: Plots the training data to see how well the model's predictions align.
 
+---
+
 # Appendix
 
 ## Understanding Differential Calculus
